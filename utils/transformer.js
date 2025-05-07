@@ -13,11 +13,11 @@ export const transformInput = (input) => {
 
   // Convert common speech recognition errors
   cleaned = cleaned
-    .replace(/^hey Artie/i, "hey RTC")
-    .replace(/^hey RTCC/i, "hey RTC")
-    .replace(/^hey artist/i, "hey RTC")
-    .replace(/^hey our TC/i, "hey RTC")
-    .replace(/^hey our DC/i, "hey RTC")
+    .replace(/^hey Artie/i, "hey R3")
+    .replace(/^hey R3C/i, "hey R3")
+    .replace(/^hey artist/i, "hey R3")
+    .replace(/^hey our TC/i, "hey R3")
+    .replace(/^hey our DC/i, "hey R3")
 
   return cleaned
 }

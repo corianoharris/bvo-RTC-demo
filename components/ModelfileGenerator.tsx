@@ -73,7 +73,7 @@ const ModelfileGenerator = () => {
               </pre>
             </li>
             <li>Wait for the model to be created (this may take a few minutes)</li>
-            <li>Once complete, select "multiverse-rtc" from the model dropdown in RTC to use your custom model</li>
+            <li>Once complete, select "multiverse-rtc" from the model dropdown in R3 to use your custom model</li>
           </ol>
           <p className="mt-3 text-xs text-gray-500">
             Note: The app will automatically detect and use this model when available, falling back to other methods if

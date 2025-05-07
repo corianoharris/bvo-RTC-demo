@@ -194,7 +194,7 @@ export default function Home() {
         const storedName = localStorage.getItem("rtcUserName")
         const intro = storedName
           ? `Welcome back, ${storedName}.`
-          : `Hi, I'm RTC. What's your name?`
+          : `Hi, I'm R3. What's your name?`
         addMessage("ai", intro)
         speak(intro)
         setHasGreeted(true)
@@ -220,7 +220,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">RTC - Offline AI Assistant</h1>
+      <h1 className="text-2xl font-bold mb-4">R3 - Offline AI Assistant</h1>
 
       <div className="w-full max-w-2xl mb-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -239,13 +239,13 @@ export default function Home() {
                 listening ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-blue-500 hover:bg-blue-600"
               }`}
             >
-              {listening ? "Stop Listening" : conversationStarted ? "Hey, RTC" : "Start Conversation"}
+              {listening ? "Stop Listening" : conversationStarted ? "Hey, R3" : "Start Conversation"}
             </button>
 
             <div className="chat-window w-full bg-white rounded-lg shadow-lg p-4 overflow-y-auto h-[60vh] flex flex-col">
               {messages.length === 0 && (
                 <div className="text-center p-4 text-gray-500">
-                  Click "Start Conversation" to begin talking with RTC
+                  Click "Start Conversation" to begin talking with R3
                 </div>
               )}
 
@@ -259,7 +259,7 @@ export default function Home() {
               {isProcessing && (
                 <div className="mb-2">
                   <div className="message my-2 p-3 rounded-lg max-w-[80%] bg-blue-100 self-start">
-                    <div className="font-bold text-xs mb-1">RTC</div>
+                    <div className="font-bold text-xs mb-1">R3</div>
                     <div>I'm thinking...</div>
                   </div>
                 </div>
@@ -276,7 +276,7 @@ export default function Home() {
                   : "Click the button to start a conversation"}
             </div>
 
-            <div className="text-xs text-gray-400 text-center">Say "I'm done RTC" to end the conversation</div>
+            <div className="text-xs text-gray-400 text-center">Say "I'm done R3" to end the conversation</div>
           </TabsContent>
 
           <TabsContent value="models" className="space-y-4">

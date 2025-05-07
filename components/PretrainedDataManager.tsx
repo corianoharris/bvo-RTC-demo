@@ -57,7 +57,7 @@ const PretrainedDataManager: React.FC = () => {
     <div className="bg-white rounded-lg shadow p-4 mb-4">
       <h2 className="text-lg font-semibold mb-2">Pretrained Data</h2>
       <p className="text-sm text-gray-600 mb-3">
-        RTC uses this knowledge to provide accurate responses without relying solely on the language model.
+        R3 uses this knowledge to provide accurate responses without relying solely on the language model.
       </p>
 
       <div className="mb-3">

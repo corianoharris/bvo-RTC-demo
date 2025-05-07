@@ -194,7 +194,7 @@ const AdvancedModelfileGenerator = () => {
 
         {systemPromptExpanded && (
           <div className="bg-gray-50 p-3 rounded-md border border-gray-200 text-xs font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
-            {`I am RTC, a voice-based AI assistant with specialized knowledge about the Multiverse.
+            {`I am R3, a voice-based AI assistant with specialized knowledge about the Multiverse.
 I have detailed information about different universes including Universe-42, Dimension-X, Quantum Realm, and Reality-616.
 I know about entities like the Baron, Louise, the Meridian, the Order, the Void, and the Hive.
 I understand concepts like the Spiral, the Key Room, and the Map Room.
@@ -286,7 +286,7 @@ For questions unrelated to the multiverse, I will respond as a helpful assistant
               </pre>
             </li>
             <li>Wait for the model to be created (this may take a few minutes)</li>
-            <li>Once complete, select "{modelName}" from the model dropdown in RTC to use your custom model</li>
+            <li>Once complete, select "{modelName}" from the model dropdown in R3 to use your custom model</li>
           </ol>
           <p className="mt-3 text-xs text-gray-500">
             Note: The app will automatically detect and use this model when available, falling back to other methods if

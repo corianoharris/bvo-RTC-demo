@@ -84,7 +84,7 @@ const OllamaModelInfo: React.FC<OllamaModelInfoProps> = ({ modelName }) => {
         </div>
       )}
 
-      <div className="mt-2 text-xs text-gray-500">This model is being used for all RTC responses</div>
+      <div className="mt-2 text-xs text-gray-500">This model is being used for all R3 responses</div>
     </div>
   )
 }

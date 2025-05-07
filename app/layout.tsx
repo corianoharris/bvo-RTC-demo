@@ -6,7 +6,7 @@ import { Inter } from "next/font/google"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "RTC - Offline AI Assistant",
+  title: "R3 - Offline AI Assistant",
   description: "Voice-based AI assistant powered by Ollama",
     generator: 'v0.dev'
 }

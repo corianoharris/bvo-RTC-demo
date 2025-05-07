@@ -16,12 +16,12 @@ export const generateMultiverseModelfile = (
 ) => {
   return `FROM ${baseModel}
 
-# Multiverse RTC Assistant - ${modelName}
+# Multiverse R3 Assistant - ${modelName}
 # This model is specialized for the multiverse dataset
 # Created: ${new Date().toISOString().split("T")[0]}
 
 SYSTEM """
-I am RTC, a voice-based AI assistant with specialized knowledge about the Multiverse.
+I am R3, a voice-based AI assistant with specialized knowledge about the Multiverse.
 I have detailed information about different universes including Universe-42, Dimension-X, Quantum Realm, and Reality-616.
 I know about entities like the Baron, Louise, the Meridian, the Order, the Void, and the Hive.
 I understand concepts like the Spiral, the Key Room, and the Map Room.

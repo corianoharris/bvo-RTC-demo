@@ -1,8 +1,8 @@
-# RTC - Offline AI Assistant
+# R3 - Offline AI Assistant
 
-RTC (Real-Time Conversation) is a voice-based AI assistant that runs completely offline using Ollama. It features specialized knowledge about the multiverse and can respond to a wide range of queries through voice interaction.
+R3 (Real-Time Conversation) is a voice-based AI assistant that runs completely offline using Ollama. It features specialized knowledge about the multiverse and can respond to a wide range of queries through voice interaction.
 
-![RTC Assistant](https://placeholder.svg?height=300&width=600&query=Voice%20AI%20Assistant%20Interface)
+![R3 Assistant](https://placeholder.svg?height=300&width=600&query=Voice%20AI%20Assistant%20Interface)
 
 ## Features
 
@@ -36,7 +36,7 @@ After installation, pull at least one model:
 ollama pull llama3
 \`\`\`
 
-### 2. Clone and Set Up the RTC Application
+### 2. Clone and Set Up the R3 Application
 
 \`\`\`bash
 # Clone the repository
@@ -54,11 +54,15 @@ npm run dev
 pnpm dev
 \`\`\`
 
+# Run Ollama in seperate terminal
+ollama run llama3
+
+
 The application will be available at [http://localhost:3000](http://localhost:3000)
 
 ## Creating a Custom Multiverse Model
 
-RTC works best with a custom multiverse model. You can create one directly in the app:
+R3 works best with a custom multiverse model. You can create one directly in the app:
 
 1. Start the application and navigate to the "Models & Settings" tab
 2. Use the "Create Multiverse Model" section to create a custom model
@@ -81,12 +85,12 @@ ollama create multiverse-rtc -f ./model/ModelFile.txt
 3. Speak your name when prompted
 4. Ask questions or give commands using your voice
 5. Click "Stop Listening" when you want to pause
-6. Say "I'm done RTC" to end the conversation
+6. Say "I'm done R3" to end the conversation
 
 ### Voice Commands
 
-- "Hey RTC" - Resume listening if paused
-- "I'm done RTC" - End the conversation
+- "Hey R3" - Resume listening if paused
+- "I'm done R3" - End the conversation
 - "What is the multiverse?" - Get information about the multiverse
 - "Tell me about the Baron" - Learn about multiverse characters
 
@@ -130,7 +134,7 @@ If model creation fails:
 
 ## Development
 
-To modify or extend RTC:
+To modify or extend R3:
 
 - Add new topics to `utils/pretrainedData.js`
 - Extend the multiverse dataset in `utils/multiverseData.js`

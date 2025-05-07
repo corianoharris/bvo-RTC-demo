@@ -1,6 +1,6 @@
 /**
- * Pretrained data for RTC assistant
- * This file contains domain knowledge that RTC can use to answer questions
+ * Pretrained data for R3 assistant
+ * This file contains domain knowledge that R3 can use to answer questions
  */
 
 const pretrainedData = {

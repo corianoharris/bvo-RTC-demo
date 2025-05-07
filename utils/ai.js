@@ -206,7 +206,7 @@ const isMultiverseQuery = (query) => {
 
 // Create a prompt with context for the AI
 const createPrompt = (userInput, userName) => {
-  return `You are RTC, a helpful voice assistant talking to ${userName || "a user"}. 
+  return `You are R3, a helpful voice assistant talking to ${userName || "a user"}. 
 You are friendly and conversational.
 Keep your responses concise and conversational, as they will be spoken aloud.
 DO NOT repeat the user's question in your response.
@@ -222,7 +222,7 @@ const createPromptWithPretrainedData = (userInput, userName, topic) => {
   // Get formatted pretrained data for this topic
   const pretrainedData = formatPretrainedDataForPrompt(topic)
 
-  return `You are RTC, a helpful voice assistant talking to ${userName || "a user"}.
+  return `You are R3, a helpful voice assistant talking to ${userName || "a user"}.
 You are an expert in ${topic.replace(/_/g, " ")}.
 
 ${pretrainedData}

@@ -67,7 +67,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onModelSelect, currentMod
         ))}
       </select>
       <p className="mt-1 text-xs text-gray-500">
-        Using a different model may change how RTC responds to your questions.
+        Using a different model may change how R3 responds to your questions.
       </p>
     </div>
   )
