@@ -194,7 +194,7 @@ export default function Home() {
         const storedName = localStorage.getItem("rtcUserName")
         const intro = storedName
           ? `Welcome back, ${storedName}.`
-          : `Hi, I'm R3. What's your name?`
+          : `Hi, I'm River Room Rob but you can call me R3. What's your name?`
         addMessage("ai", intro)
         speak(intro)
         setHasGreeted(true)
