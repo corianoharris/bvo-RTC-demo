@@ -12,13 +12,13 @@ import AdvancedModelfileGenerator from "@/components/AdvancedModelfileGenerator"
 import ResponseSourceIndicator from "@/components/ResponseSourceIndicator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import DirectModelCreator from "@/components/DirectModelCreator"
-import { set } from "react-hook-form"
 
 export default function Home() {
   const [messages, setMessages] = useState<Array<{ sender: string; text: string; source?: string }>>([])
   const [listening, setListening] = useState(false)
   const [userName, setUserName] = useState("")
   const [conversationStarted, setConversationStarted] = useState(false)
+  const [hasGreeted, setHasGreeted] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [selectedModel, setSelectedModel] = useState("llama3")
   const [activeTab, setActiveTab] = useState("chat")
@@ -26,7 +26,6 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
-    // Load username from localStorage if available
     const storedName = localStorage.getItem("rtcUserName")
     if (storedName) {
       setUserName(storedName)
@@ -41,7 +40,6 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    // Scroll to the bottom of messages when new messages are added
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
@@ -51,32 +49,28 @@ export default function Home() {
     setMessages((prev) => [...prev, { sender, text, source }])
   }
 
-  // Determine if text is a question rather than a name
   const isQuestion = (text: string): boolean => {
-    // Check if text starts with question words or contains question marks
     const questionPatterns = [
-      /^what/i,
-      /^who/i,
-      /^where/i,
-      /^when/i,
-      /^why/i,
-      /^how/i,
-      /^is/i,
-      /^are/i,
-      /^can/i,
-      /^could/i,
-      /^would/i,
-      /^should/i,
-      /^do/i,
-      /^does/i,
-      /^did/i,
-      /\?/,
+      /^(what|who|where|when|why|how|is|are|can|could|would|should|do|does|did)\b/i,
+      /\b(what's|who's|where's|when's|how's|isn't|aren't|can't)\b/i,
+      /\?$/
     ]
 
-    return questionPatterns.some((pattern) => pattern.test(text))
+    const nameLikePatterns = [
+      /^[A-Z][a-z]+$/i,
+      /^[A-Z][a-z]+\s[A-Z][a-z]+$/i
+    ]
+
+    const isQuestionLike = questionPatterns.some((pattern) => pattern.test(text))
+    const isNameLike = nameLikePatterns.some((pattern) => pattern.test(text.trim()))
+
+    if (isQuestionLike) return true
+    if (isNameLike) return false
+
+    const hasVerbStructure = /\b(are|is|were|was|have|has|had|do|does|did)\b/i.test(text)
+    return !hasVerbStructure
   }
 
-  // Check if the input is a command to end the conversation
   const isEndConversationCommand = (text: string): boolean => {
     const endCommands = [
       /^i'?m done rtc$/i,
@@ -86,11 +80,9 @@ export default function Home() {
       /^bye rtc$/i,
       /^exit$/i,
     ]
-
     return endCommands.some((pattern) => pattern.test(text.trim()))
   }
 
-  // Handle user speech input
   const handleUserSpeech = async (text: string) => {
     if (!text) return
     clearTimeout(timeoutRef.current!)
@@ -98,61 +90,54 @@ export default function Home() {
     const transformedText = transformInput(text)
     addMessage("user", transformedText)
 
-    // Check if this is a command to end the conversation
     if (isEndConversationCommand(transformedText)) {
-      // Stop listening when user says "I'm done" or similar
       stopListening()
       setListening(false)
-      // Remove user name from localStorage when conversation ends
       localStorage.removeItem("rtcUserName")
-      localStorage.clear();
+      localStorage.clear()
       setUserName("")
       const bye = `Thank you for chatting with me. I hope I was able to help you.`
       addMessage("ai", bye)
       speak(bye)
-     setTimeout(() => {
-       setConversationStarted(false)
-       setMessages([]) 
-       window.location.reload() 
-     }, 5000)
+      setTimeout(() => {
+        setConversationStarted(false)
+        setHasGreeted(false)
+        setMessages([])
+        window.location.reload()
+      }, 5000)
       return
     }
 
-    // If conversation hasn't officially started yet
     if (!conversationStarted) {
       setConversationStarted(true)
 
-      // Check if the first input is a question rather than a name
       if (isQuestion(transformedText)) {
-        // It's a question, not a name - use stored name or "friend"
         const storedName = localStorage.getItem("rtcUserName") || "friend"
         setUserName(storedName)
 
         try {
-          // Show processing indicator
           setIsProcessing(true)
-
-          // Get response from Ollama for the question
+          stopListening() // Turn off speech recognition while thinking
           const result = await getAIResponse(transformedText, storedName, selectedModel)
-
-          // Hide processing indicator
           setIsProcessing(false)
-
           const transformedReply = transformResponse(result.response)
           addMessage("ai", transformedReply, result.source)
           speak(transformedReply)
+          startListening(handleUserSpeech) // Resume listening after response
+          setListening(true)
         } catch (error) {
           setIsProcessing(false)
           console.error("Error getting AI response:", error)
           const errorMessage = "I'm having trouble connecting to my brain. Please check if Ollama is running properly."
           addMessage("ai", errorMessage)
           speak(errorMessage)
+          startListening(handleUserSpeech) // Resume listening after error
+          setListening(true)
         }
       } else {
-        // It's likely a name
         setUserName(transformedText)
         localStorage.setItem("rtcUserName", transformedText)
-        const welcome = `Nice to meet you, ${transformedText}. How can I help you today?`
+        const welcome = `Nice to meet you, ${transformedText}.`
         addMessage("ai", welcome)
         speak(welcome)
       }
@@ -161,70 +146,62 @@ export default function Home() {
       return
     }
 
-    // Regular conversation flow
     try {
-      // Show processing indicator
       setIsProcessing(true)
-
-      // Get response from Ollama with the selected model
+      stopListening() // Turn off speech recognition while thinking
       const result = await getAIResponse(transformedText, userName || "friend", selectedModel)
-
-      // Hide processing indicator
       setIsProcessing(false)
-
       const transformedReply = transformResponse(result.response)
       addMessage("ai", transformedReply, result.source)
       speak(transformedReply)
+      startListening(handleUserSpeech) // Resume listening after response
+      setListening(true)
     } catch (error) {
       setIsProcessing(false)
       console.error("Error getting AI response:", error)
       const errorMessage = "I'm having trouble connecting to my brain. Please check if Ollama is running properly."
       addMessage("ai", errorMessage)
       speak(errorMessage)
+      startListening(handleUserSpeech) // Resume listening after error
+      setListening(true)
     }
 
-    // Start a timeout for automatic stop listening
     startTimeout()
   }
-
-  
 
   const startTimeout = () => {
     clearTimeout(timeoutRef.current!)
     timeoutRef.current = setTimeout(() => {
       stopListening()
       setListening(false)
-     
       setUserName("")
       const msg = `Thank you for chatting with me. I hope I was able to help you.`
       addMessage("ai", msg)
       speak(msg)
       localStorage.removeItem("rtcUserName")
-      localStorage.clear();
+      localStorage.clear()
       setConversationStarted(false)
-      setMessages([]) 
-      window.location.reload() 
-       
-    }, 35000) // Stop listening after 15 seconds of inactivity
+      setHasGreeted(false)
+      setMessages([])
+      window.location.reload()
+    }, 35000)
   }
 
   const startConversation = () => {
     if (!conversationStarted) {
       setConversationStarted(true)
-
-      // Initial greeting based on whether we know the user
-      const storedName = localStorage.getItem("rtcUserName")
-      const intro = storedName
-        ? `Welcome back, ${storedName}. How can I help you today?`
-        : `Hi, I'm RTC. What's your name?`
-
-      addMessage("ai", intro)
-      speak(intro)
+      if (!hasGreeted) {
+        const storedName = localStorage.getItem("rtcUserName")
+        const intro = storedName
+          ? `Welcome back, ${storedName}.`
+          : `Hi, I'm RTC. What's your name?`
+        addMessage("ai", intro)
+        speak(intro)
+        setHasGreeted(true)
+      }
+      startListening(handleUserSpeech)
+      setListening(true)
     }
-
-    // Start listening
-    startListening(handleUserSpeech)
-    setListening(true)
   }
 
   const toggleListening = () => {
@@ -268,7 +245,7 @@ export default function Home() {
             <div className="chat-window w-full bg-white rounded-lg shadow-lg p-4 overflow-y-auto h-[60vh] flex flex-col">
               {messages.length === 0 && (
                 <div className="text-center p-4 text-gray-500">
-                 Click &quot;Start Conversation&quot; to begin talking with RTC
+                  Click "Start Conversation" to begin talking with RTC
                 </div>
               )}
 
@@ -281,22 +258,9 @@ export default function Home() {
 
               {isProcessing && (
                 <div className="mb-2">
-                  <div className="message my-2 p-3 rounded-lg max-w-[80%] bg-blue-100 self-start flex items-center">
+                  <div className="message my-2 p-3 rounded-lg max-w-[80%] bg-blue-100 self-start">
                     <div className="font-bold text-xs mb-1">RTC</div>
-                    <div className="flex items-center space-x-1 ml-2">
-                      <div
-                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
-                        style={{ animationDelay: "0ms" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
-                        style={{ animationDelay: "150ms" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
-                        style={{ animationDelay: "300ms" }}
-                      ></div>
-                    </div>
+                    <div>I'm thinking...</div>
                   </div>
                 </div>
               )}

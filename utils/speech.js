@@ -2,6 +2,8 @@
 
 let recognition = null
 let speechCallback = null
+let isListening = false
+let isStarting = false
 
 export const startListening = (callback) => {
   speechCallback = callback
@@ -11,8 +13,15 @@ export const startListening = (callback) => {
     return
   }
 
-  // Initialize speech recognition
+  if (isStarting || isListening) {
+    console.warn("Speech recognition is already active or starting")
+    return
+  }
+
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+  if (recognition) {
+    stopListening()
+  }
   recognition = new SpeechRecognition()
 
   recognition.continuous = false
@@ -27,29 +36,45 @@ export const startListening = (callback) => {
   }
 
   recognition.onend = () => {
-    // Restart listening unless explicitly stopped
-    if (recognition && !recognition.stopped) {
-      recognition.start()
+    if (isListening && recognition && !recognition.stopped) {
+      if (!isStarting) {
+        recognition.start()
+      }
+    } else {
+      recognition = null
+      isListening = false
+      isStarting = false
     }
   }
 
   recognition.onerror = (event) => {
     console.error("Speech recognition error", event.error)
-    if (event.error === "no-speech") {
-      // Restart on no-speech error
-      if (recognition && !recognition.stopped) {
+    if (event.error === "no-speech" && isListening && !recognition.stopped) {
+      if (!isStarting) {
         recognition.start()
       }
+    } else {
+      recognition = null
+      isListening = false
+      isStarting = false
     }
   }
 
+  recognition.onstart = () => {
+    isStarting = false
+    isListening = true
+  }
+
   recognition.stopped = false
+  isStarting = true
   recognition.start()
 }
 
 export const stopListening = () => {
   if (recognition) {
     recognition.stopped = true
+    isListening = false
+    isStarting = false
     recognition.abort()
     recognition = null
   }
@@ -61,7 +86,6 @@ export const speak = (text) => {
     return
   }
 
-  // Stop any ongoing speech
   window.speechSynthesis.cancel()
 
   const utterance = new SpeechSynthesisUtterance(text)
@@ -69,10 +93,8 @@ export const speak = (text) => {
   utterance.pitch = 1.0
   utterance.volume = 1.0
 
-  // Get available voices and select a good one if available
   const voices = window.speechSynthesis.getVoices()
 
-  // Try to find a natural sounding English voice
   const preferredVoices = [
     "Google UK English Female",
     "Microsoft Libby Online (Natural)",
@@ -89,7 +111,6 @@ export const speak = (text) => {
     }
   }
 
-  // If no preferred voice found, try to find any English voice
   if (!utterance.voice) {
     const englishVoice = voices.find((v) => v.lang.startsWith("en-"))
     if (englishVoice) {
